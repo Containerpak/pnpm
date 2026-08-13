@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+if [ -z "${HOME:-}" ]; then
+    exec /usr/local/libexec/node-lts "$@"
+fi
+
+PNPM_HOME=${PNPM_HOME:-"$HOME/.local/share/cpak/pnpm"}
+export PNPM_HOME
+export PATH="$PNPM_HOME/bin:$PATH"
+
+managed_node="$PNPM_HOME/bin/node"
+if [ -x "$managed_node" ] && [ "$managed_node" != /usr/local/bin/node ]; then
+    exec "$managed_node" "$@"
+fi
+
+exec /usr/local/libexec/node-lts "$@"

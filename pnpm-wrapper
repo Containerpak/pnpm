@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+if [ -z "${HOME:-}" ]; then
+    echo "pnpm requires HOME" >&2
+    exit 1
+fi
+
+PNPM_HOME=${PNPM_HOME:-"$HOME/.local/share/cpak/pnpm"}
+export PNPM_HOME
+export PATH="$PNPM_HOME/bin:$PATH"
+
+exec /opt/pnpm/pnpm "$@"

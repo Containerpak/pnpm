@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Containerpak/cpak/v2/schema/manifest-v2.json",
+  "manifest_version": "2.0",
+  "name": "pnpm",
+  "description": "Fast package manager with selectable Node.js runtimes.",
+  "version": "11.21.0",
+  "image": "ghcr.io/containerpak/pnpm:main",
+  "binaries": [
+    "/usr/local/bin/pnpm",
+    "/usr/local/bin/node",
+    "/usr/local/bin/npm",
+    "/usr/local/bin/npx",
+    "/usr/local/bin/corepack"
+  ],
+  "desktop_entries": [],
+  "dependencies": [],
+  "addons": [
+    "github.com/containerpak/sdk-native"
+  ],
+  "idle_time": 0,
+  "override": {
+    "socketX11": false,
+    "socketWayland": false,
+    "socketPulseAudio": false,
+    "socketSessionBus": false,
+    "socketSystemBus": false,
+    "socketSshAgent": true,
+    "socketCups": false,
+    "socketGpgAgent": true,
+    "socketAtSpiBus": false,
+    "socketBluetooth": false,
+    "deviceDri": false,
+    "deviceKvm": false,
+    "deviceShm": false,
+    "deviceAlsa": false,
+    "deviceVideo": false,
+    "deviceFuse": false,
+    "deviceTun": false,
+    "deviceUsb": false,
+    "deviceAll": false,
+    "notification": false,
+    "openURI": false,
+    "filesystem": [
+      {
+        "path": "home",
+        "access": "read-write"
+      }
+    ],
+    "env": [],
+    "network": true,
+    "process": false,
+    "userNamespaces": false,
+    "memoryMaxMB": 0,
+    "cpuQuota": 0,
+    "pidsMax": 0,
+    "asRoot": false,
+    "allowedHostCommands": []
+  }
+}
