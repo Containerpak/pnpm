@@ -25,9 +25,10 @@ FROM ghcr.io/containerpak/sdk-node-lts:main
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git libatomic1 openssh-client && \
-    rm -rf /var/lib/apt/lists/* && \
     mkdir -p /usr/local/libexec && \
-    mv /usr/local/bin/node /usr/local/libexec/node-lts
+    mv /usr/local/bin/node /usr/local/libexec/node-lts && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/*.bin
 
 COPY --from=fetch /opt/pnpm /opt/pnpm
 COPY --from=fetch /usr/share/licenses/pnpm /usr/share/licenses/pnpm
