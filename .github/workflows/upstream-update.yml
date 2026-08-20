@@ -1,0 +1,72 @@
+name: Update upstream
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-pnpm
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Resolve upstream release
+        id: upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          latest=$(gh api repos/pnpm/pnpm/releases/latest --jq '.tag_name | ltrimstr("v")')
+          current=$(sed -n 's/^ARG PNPM_VERSION=//p' Containerfile)
+          echo "version=${latest}" >> "$GITHUB_OUTPUT"
+          if [[ "$latest" == "$current" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update package
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.upstream.outputs.version }}
+        run: |
+          set -euo pipefail
+          work=$(mktemp -d)
+          trap 'rm -rf "$work"' EXIT
+          curl -fsSL --retry 3 -o "$work/amd64.tar.gz" "https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-linux-x64.tar.gz"
+          curl -fsSL --retry 3 -o "$work/arm64.tar.gz" "https://github.com/pnpm/pnpm/releases/download/v${VERSION}/pnpm-linux-arm64.tar.gz"
+          curl -fsSL --retry 3 -o "$work/LICENSE" "https://raw.githubusercontent.com/pnpm/pnpm/v${VERSION}/LICENSE"
+          amd64=$(sha256sum "$work/amd64.tar.gz" | cut -d ' ' -f 1)
+          arm64=$(sha256sum "$work/arm64.tar.gz" | cut -d ' ' -f 1)
+          license=$(sha256sum "$work/LICENSE" | cut -d ' ' -f 1)
+          sed -i \
+            -e "s/^ARG PNPM_VERSION=.*/ARG PNPM_VERSION=${VERSION}/" \
+            -e "s/^ARG PNPM_SHA256_AMD64=.*/ARG PNPM_SHA256_AMD64=${amd64}/" \
+            -e "s/^ARG PNPM_SHA256_ARM64=.*/ARG PNPM_SHA256_ARM64=${arm64}/" \
+            -e "s/^ARG PNPM_LICENSE_SHA256=.*/ARG PNPM_LICENSE_SHA256=${license}/" \
+            Containerfile
+          jq --arg version "$VERSION" '.version = $version' cpak.json > "$work/cpak.json"
+          mv "$work/cpak.json" cpak.json
+
+      - name: Publish update
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.upstream.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add Containerfile cpak.json
+          git diff --cached --check
+          git commit -m "chore: update pnpm to ${VERSION}"
+          git push
