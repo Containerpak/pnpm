@@ -1,10 +1,10 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Containerpak/cpak/v2/schema/manifest-v2.json",
-  "manifest_version": "2.0",
+  "$schema": "https://raw.githubusercontent.com/Containerpak/cpak/v2/schema/manifest-v3.json",
+  "manifest_version": "3.0",
   "name": "pnpm",
   "description": "Fast package manager with selectable Node.js runtimes.",
   "version": "11.24.0",
-  "image": "ghcr.io/containerpak/pnpm:main",
+  "image": "ghcr.io/containerpak/pnpm@sha256:e0e23690ca07f3382d967dfe659770e31d05cf8701674242d85874d510560bf1",
   "binaries": [
     "/usr/local/bin/pnpm",
     "/usr/local/bin/node",
@@ -19,16 +19,11 @@
   ],
   "idle_time": 0,
   "override": {
-    "socketX11": false,
     "socketWayland": false,
     "socketPulseAudio": false,
-    "socketSessionBus": false,
-    "socketSystemBus": false,
     "socketSshAgent": true,
     "socketCups": false,
     "socketGpgAgent": true,
-    "socketAtSpiBus": false,
-    "socketBluetooth": false,
     "deviceDri": false,
     "deviceKvm": false,
     "deviceShm": false,
@@ -53,7 +48,6 @@
     "memoryMaxMB": 0,
     "cpuQuota": 0,
     "pidsMax": 0,
-    "asRoot": false,
-    "allowedHostCommands": []
+    "asRoot": false
   }
 }
