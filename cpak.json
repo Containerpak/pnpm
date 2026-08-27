@@ -4,7 +4,7 @@
   "name": "pnpm",
   "description": "Fast package manager with selectable Node.js runtimes.",
   "version": "11.24.0",
-  "image": "ghcr.io/containerpak/pnpm@sha256:e0e23690ca07f3382d967dfe659770e31d05cf8701674242d85874d510560bf1",
+  "image": "ghcr.io/containerpak/pnpm@sha256:e3cc35cf29bbe43eab7e2bfea864e2d01cd9df23db303a94e8f28b6b8966791c",
   "binaries": [
     "/usr/local/bin/pnpm",
     "/usr/local/bin/node",
